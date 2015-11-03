@@ -1,0 +1,201 @@
+<!DOCTYPE>
+<html>
+        <head>
+                <title>index</title>
+                    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css" />
+                    <script src="http://code.jquery.com/jquery-1.7.1.js"></script>
+                    <script src="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.js"></script>
+                    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+                <meta name="viewport" content="width=device-width, initial-scale-1.0, maximum-scale=1.0,minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi" />
+                <script>
+                        window.onload=function(){
+                                        //앱 제어
+                                var socket=io.connect('http://14.63.223.201',{
+                                'reconnect': true
+                                , 'resource': 'socket.io'
+                                });
+
+                                var contents=document.getElementById('contents');
+                                function printMessage(msg){
+                                        var p=document.createElement("p");
+                                        if(p.textContent){
+                                                p.textContent=msg;
+                                        }else{
+                                                p.innerText=msg;
+                                        }
+                                        contents.appendChild(p);
+                                }
+                                // 앱 제어 시작
+                                document.getElementById('classstart').onclick = function () {
+                                        printMessage('연결 시작.');
+                                        jsonStr={'cmd':'classstart'};
+                                        socket.emit('message', jsonStr);
+                                        printMessage('classstart send');
+                                };
+                                // 앱 제어 종료
+                                document.getElementById('classend').onclick = function () {
+                                        printMessage('연결 종료');
+                                        jsonStr={'cmd':'classend'};
+                                        socket.emit('message', jsonStr);
+                                        printMessage('classend send');
+                                };
+                                //퀴즈
+                                document.getElementById('quiz').onclick = function () {
+                                                                    var num = Math.ceil(Math.random()*999); // 0 - 999 사이 랜덤 숫자 생성
+                                                                    printMessage(num);
+                                                                    alert(num);
+                                                                    jsonStr={'cmd':'surprise','surprise': num}; // 서버로 전송
+                                                        socket.emit('message', jsonStr);
+                                                            };
+                        };
+                </script>
+                <script>
+                         // 사용자 확인
+                                function msg(){
+                                    var f = document.loginform;  // 타이핑을 줄>이기 위해서 폼 요소를 f 변수에 저장
+                                    if(f.id.value==""){
+                                        alert("아이디를 입력해주세요");
+                                        f.id.focus();  // 커서를 아이디 입력 필>드로 이동
+                                        return false;  // 폼 전송을 취소
+                                    }
+                                     else if(f.pwd.value==""){
+                                        alert("비밀번호를 입력해주세요");
+                                        f.pwd.focus();  // 커서를 패스워드 입력 필드로 이동
+                                        return false;  // 폼 전송을 취소
+                                    }
+                                    else if(f.id.value=="root"){
+                                        alert("관리자 페이지 접근");
+                                        location.replace("http://14.63.223.201/#admin");
+
+                                    }
+                                    else {
+                                        location.replace("http://14.63.223.201/#home");
+
+                                    }
+                                }
+                                </script>
+        </head>
+
+        <body>
+
+                <!-- 로그인 -->
+    <div data-role="page" data-theme="b">
+        <div data-role="header" data-theme="b">
+            <h1>login</h1>
+        </div>
+        <div data-role="content">
+            <center><h3>login</h3></center>
+                                <form id="loginform"
+                                        <div data-role="fieldcontain" name="loginform">
+                                        <label for="text">ID :</label>
+                                        <input type="text" id="id""/>
+                                        </div>
+
+                                        <div data-role="fieldcontain">
+                                        <label for="password">PW :</label>
+                                        <input type="password" id="pwd"/>
+                                        </div>
+
+                                        <div data-role="fieldcontain">
+                                        <input type="button" value="로그인" onclick="return msg()";>
+                                        </div>
+                                </form>
+        </div>
+    </div>
+    <!-- 제어 -->
+    <div data-role="page" id="control" data-theme="b">
+        <div data-role="header" data-theme="b"  data-position="inline">
+        <a href="#list" data-icon="home" class="ui-btn-left" data-ajax="false">>목록</a>
+            <h1>제어</h1>
+        </div>
+        <center><div id="contents" style="width:300px; height:200px; overflow:auto; border:1px solid #000;"></center>
+                    <input type="button" id="classstart" value="시작" />
+                    <input type="button" id="classend" value="종료" />
+
+
+        </div>
+    </div>
+
+        <!-- 강의 목록 home -->
+    <div data-role="page" id="home" data-theme="b">
+         <div data-role="header" data-theme="b"  data-position="inline">
+            <h1>강의 목록</h1>
+        </div>
+               <ul data-role="listview" data-split-theme="b" data-theme="c">
+        ??????????? <li><a href="#list">c 프로그래밍</a></li>
+        ???????</ul>
+        </div>
+    </div>
+
+     <!--                                                                               일반 페이지                                                                                                                                              -->
+
+    <!-- 목록 -->
+    <div data-role="page" id="list" data-theme="b">
+         <div data-role="header" data-theme="b"  data-position="inline">
+         <a href="#home" data-icon="home" class="ui-btn-left" data-ajax="false">Home</a>
+            <h1>목록</h1>
+        </div>
+               <ul data-role="listview" data-split-theme="b" data-theme="c">
+        ??????????? <li><a href="#attendance">출석</a></li>
+                                <li><a href="#control">앱 제어</a></li>
+                                <li><a href="#user">사용자</a></li>
+                                <li><a href="#quiz">퀴즈</a></li>
+        ???????</ul>
+        </div>
+    </div>
+
+    <!-- 출석 -->
+    <div data-role="page" id="attendance" data-theme="b">
+        <div data-role="header" data-theme="b"  data-position="inline">
+        <a href="#list" data-icon="home" class="ui-btn-left" data-ajax="false">>목록</a>
+            <h1>출석</h1>
+        </div>
+        <div data-role="attendance">
+            <h3>출석</h3>
+
+                        <h1>성공</h1>
+           <a data-role="button" href="#admin" data-theme="b">관리자</a>
+        </div>
+    </div>
+
+    <!-- 사용자 -->
+    <div data-role="page" id="user" data-theme="b">
+        <div data-role="header" data-theme="b"  data-position="inline">
+        <a href="#list" data-icon="home" class="ui-btn-left" data-ajax="false">>목록</a>
+            <h1>사용자</h1>
+        </div>
+        <div data-role="user">
+            <h3>나옴</h3>
+
+                        <h1>사용자</h1>
+           <a data-role="button" href="#admin" data-theme="b">관리자</a>
+        </div>
+    </div>
+
+    <!-- 퀴즈 -->
+    <div data-role="page" id="quiz" data-theme="b">
+        <div data-role="header" data-theme="b"  data-position="inline">
+        <a href="#list" data-icon="home" class="ui-btn-left" data-ajax="false">>목록</a>
+            <h1>퀴즈</h1>
+        </div>
+                <center><div id="contents" style="width:200px; height:200px; overflow:auto; border:1px solid #000;"></center>
+                    <input type="button" id="quiz" value="생성" />
+
+    </div>
+
+    <!--                                                                                일반 페이지 끝                                                                                                                                           -->
+
+    <!-- 관리자 -->
+    <div data-role="page" id="admin" data-theme="b">
+        <div data-role="header" data-theme="b"  data-position="inline">
+            <h1>관리</h1>
+        </div>
+        <div data-role="admin">??
+               <ul data-role="listview" data-split-theme="b" data-theme="e">
+        ???????????<li data-role="list-divider">list</li>
+        ???????????<li data-icon="delete"><a href="#home">화이트리스트</a></li>
+        ???????</ul>
+        </div>
+    </div>
+        </body>
+</html>
